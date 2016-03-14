@@ -11,3 +11,4 @@ composer.lock
 !app/cache/.htaccess
 /app/config/config.php
 /app/config/database.php
+/bin/templates/params.ini
