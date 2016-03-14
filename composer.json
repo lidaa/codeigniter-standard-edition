@@ -1,0 +1,31 @@
+{
+    "name": "lidaa/codeigniter-standard-edition",
+    "license": "MIT",
+    "type": "project",
+    "description": "The \"CodeIgniter Standard Edition\" distribution",
+    "autoload": {
+        "psr-4": {
+            "CISE\\Composer\\": "bin/Composer"
+        }
+    },
+    "require": {
+        "php": ">=5.3.2",
+        "codeigniter/framework": "3.0.*"
+    },
+    "require-dev": {
+    },
+    "scripts": {
+        "post-install-cmd": ["CISE\\Composer\\ComposerScript::run"],
+        "post-update-cmd": ["CISE\\Composer\\ComposerScript::run"]
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:lidaa/codeigniter-standard-edition.git"
+        }
+    ],
+    "config": {
+    },
+    "extra": {
+    }
+}
