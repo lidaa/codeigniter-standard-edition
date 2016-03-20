@@ -6,19 +6,39 @@ use Composer\Script\Event;
 
 class ComposerScript {
 
+    private static $app_template_path;
+    private static $app_config_path;
+    private static $db_template_path;
+    private static $db_config_path;
+
     public static function run(Event $event) {
+        self::init();
+
         $io = $event->getIO();
 
         $file = sprintf('%s/templates/params.ini', dirname(dirname(__FILE__)));
         $params = parse_ini_file($file, true);
         $userParams = array();
 
-        $io->write('Change App Config');
+        $callback = function ($typeInput) {
+            if (!$typeInput) {
+                throw new \Exception('"subclass_prefix" should not be null');
+            }
+
+            return $typeInput;
+        };
+
+        $io->write('<info>Change App Config:</info>');
         foreach ($params['APP'] as $key => $value) {
-            $userParams['APP'][$key] = $io->ask('Type your ' . $key . ' (default: ' . $value . '): ', $value);
+            if ('subclass_prefix' == $key && !($value)) {
+                $subclass_prefix = $io->askAndValidate('Type your ' . $key . ' (default: ' . $value . '): ', $callback, null, $value);
+                self::render(array('subclass_prefix' => $subclass_prefix), self::$app_template_path, self::$app_template_path);
+            } else {
+                $userParams['APP'][$key] = $io->ask('Type your ' . $key . ' (default: ' . $value . '): ', $value);
+            }
         }
 
-        $io->write('Change DataBase Config');
+        $io->write('<info>Change DataBase Config:</info>');
         foreach ($params['DB'] as $key => $value) {
             $userParams['DB'][$key] = $io->ask('Type your ' . $key . ' (default: ' . $value . '): ', $value);
         }
@@ -26,24 +46,30 @@ class ComposerScript {
         self::renderTemplates($userParams);
         self::generateIniParams($userParams, $file);
 
-        $io->write('Your params were successfully saved');
+        $io->write('<info>Your params were successfully saved.</info>');
+
+        $io->write('<info>Deleting cache files and log files...</info>');
 
         self::clearCache();
         self::clearLogs();
+        
+        $io->write('<info>Cache and Logs successfully deleted.</info>');
     }
 
-    private static function renderTemplates($params) {
+    private static function init() {
         $app_config_folder = sprintf('%s/app/config', dirname(dirname(dirname(__FILE__))));
         $templates_folder = sprintf('%s/templates/', dirname(dirname(__FILE__)));
 
-        $app_template_path = sprintf('%s/config.php', $templates_folder);
-        $app_config_path = sprintf('%s/config.php', $app_config_folder);
+        self::$app_template_path = sprintf('%s/config.php', $templates_folder);
+        self::$app_config_path = sprintf('%s/config.php', $app_config_folder);
 
-        $db_template_path = sprintf('%s/database.php', $templates_folder);
-        $db_config_path = sprintf('%s/database.php', $app_config_folder);
+        self::$db_template_path = sprintf('%s/database.php', $templates_folder);
+        self::$db_config_path = sprintf('%s/database.php', $app_config_folder);
+    }
 
-        self::render($params['APP'], $app_template_path, $app_config_path);
-        self::render($params['DB'], $db_template_path, $db_config_path);
+    private static function renderTemplates($params) {
+        self::render($params['APP'], self::$app_template_path, self::$app_config_path);
+        self::render($params['DB'], self::$db_template_path, self::$db_config_path);
     }
 
     private static function render($params, $template_path, $destination_file) {
@@ -51,7 +77,7 @@ class ComposerScript {
         foreach ($params as $key => $value) {
             $content = str_replace("%$key%", $value, $content);
         }
-        
+
         file_put_contents($destination_file, $content);
     }
 
@@ -84,7 +110,7 @@ class ComposerScript {
                 fwrite($fp, $dataToSave);
                 flock($fp, LOCK_UN);
             }
-            
+
             fclose($fp);
         }
     }
