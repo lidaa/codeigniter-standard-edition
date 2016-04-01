@@ -9,6 +9,3 @@ composer.lock
 /app/cache/*
 !app/cache/index.html
 !app/cache/.htaccess
-/app/config/config.php
-/app/config/database.php
-/bin/templates/params.ini

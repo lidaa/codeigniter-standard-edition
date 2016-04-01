@@ -1,7 +1,14 @@
 <?php
 
-class Input_Output
-{
+namespace Cise;
+
+/**
+ * Description of Input_Output
+ *
+ * @author Lidaa <aa_dil@hotmail.fr>
+ */
+class Input_Output {
+
     const BLACK = "\033[0;30m";
     const DARK_GRAY = "\033[1;30m";
     const BLUE = "\033[0;34m";
@@ -27,22 +34,45 @@ class Input_Output
     const BG_CYAN = "\033[46m";
     const BG_LIGHT_GRAY = "\033[47m";
 
-    public function write($message)
-    {
-        fwrite(STDOUT, $this->colorize($message));
+    /**
+     * write
+     * 
+     * @param type $message
+     * @param type $newline
+     */
+    public function write($message, $newline = true) {
+        fwrite(STDOUT, $this->colorize($message) . ($newline ? PHP_EOL : ''));
     }
 
-    public function writeln($message)
-    {
-        fwrite(STDOUT, $this->colorize($message) . PHP_EOL);
+    /**
+     * ask
+     * 
+     * @param type $message
+     * @param type $defaut_value
+     * @return type
+     */
+    public function ask($message, $defaut_value) {
+        $this->write($message, false);
+        $line = trim(fgets(STDIN));
+        
+        if(!$line) {
+            $line = $defaut_value;
+        }
+        
+        return $line;
     }
 
-    protected function colorize($message)
-    {
+    /**
+     * colorize
+     * 
+     * @param type $message
+     * @return type
+     */
+    protected function colorize($message) {
         $colorsMap = array(
             '<info>' => self::GREEN,
             '<comment>' => self::YELLOW,
-            '<question>' => self::BG_CYAN,
+            '<question>' => self::BLACK . self::BG_CYAN,
             '<error>' => self::BG_RED,
             '</info>' => "\033[0m",
             '</comment>' => "\033[0m",

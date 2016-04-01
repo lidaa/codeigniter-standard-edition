@@ -5,11 +5,11 @@ namespace Cise;
 use Composer\Script\Event;
 
 /**
- * Description of Clear_Cache
+ * Description of Clear_Logs
  *
  * @author Lidaa <aa_dil@hotmail.fr>
  */
-class Clear_Cache extends Command {
+class Clear_Logs extends Command {
 
     /**
      * run
@@ -19,9 +19,9 @@ class Clear_Cache extends Command {
     public static function run(Event $event = null) {
         $io = self::getIO($event);
 
-        $io->write('Deleting cache files...');
+        $io->write('Deleting logs files...');
 
-        $cachePath = sprintf('%s/app/cache', dirname(dirname(dirname(__FILE__))));
+        $cachePath = sprintf('%s/app/logs', dirname(dirname(dirname(__FILE__))));
         $dir_iterator = new \RecursiveDirectoryIterator($cachePath);
         $iterator = new \RecursiveIteratorIterator($dir_iterator, \RecursiveIteratorIterator::CHILD_FIRST);
 
@@ -35,6 +35,6 @@ class Clear_Cache extends Command {
             }
         }
 
-        $io->write('<info>Cache successfully deleted.</info>');
+        $io->write('<info>Logs successfully deleted.</info>');
     }
 }
