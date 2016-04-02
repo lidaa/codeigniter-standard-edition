@@ -1,0 +1,13 @@
+#!/usr/bin/env php
+<?php
+
+require 'Command.php';
+require 'Input_Output.php';
+
+$command = rtrim($argv[1], '.php'); 
+
+require $command . '.php';
+
+$classname = 'Cise\\' . $command;
+
+$classname::run();

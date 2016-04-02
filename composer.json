@@ -5,7 +5,7 @@
     "description": "The \"CodeIgniter Standard Edition\" distribution",
     "autoload": {
         "psr-4": {
-            "CISE\\Composer\\": "bin/Composer"
+            "Cise\\": "bin/cise"
         }
     },
     "require": {
@@ -15,8 +15,14 @@
     "require-dev": {
     },
     "scripts": {
-        "post-install-cmd": ["CISE\\Composer\\ComposerScript::run"],
-        "post-update-cmd": ["CISE\\Composer\\ComposerScript::run"]
+        "post-install-cmd": [
+            "Cise\\Build_Params::run",
+            "Cise\\Clear_Cache::run"
+        ],
+        "post-update-cmd": [
+            "Cise\\Build_Params::run",
+            "Cise\\Clear_Cache::run"
+        ]
     },
     "repositories": [
         {
