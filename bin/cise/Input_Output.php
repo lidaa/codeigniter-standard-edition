@@ -42,6 +42,10 @@ class Input_Output {
      */
     public function write($message, $newline = true) {
         fwrite(STDOUT, $this->colorize($message) . ($newline ? PHP_EOL : ''));
+        
+        if(strpos($message, '<error>') !== false && strpos($message, '</error>') !== false ) {
+            exit;
+        }
     }
 
     /**
