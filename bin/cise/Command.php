@@ -19,6 +19,8 @@ class Command
      */
     protected static function getIO($event)
     {
+        self::initConstants();
+        
         if ($event instanceof Event) {
             $io = $event->getIO();
         } else {
@@ -26,5 +28,15 @@ class Command
         }
         
         return $io;
+    }
+    
+    /**
+     * initConstants
+     */
+    private static function initConstants()
+    {
+        defined('CISE_CMD') || define('CISE_CMD', true);
+        
+        include sprintf('%s/index.php', dirname(dirname(dirname(__FILE__))));
     }
 }

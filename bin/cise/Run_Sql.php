@@ -19,16 +19,7 @@ class Run_Sql extends Command {
     public static function run(Event $event = null) {
         $io = self::getIO($event);
 
-        // Path to the system folder
-        define('BASEPATH', str_replace('\\', '/', './vendor/codeigniter/framework/system'));
-
-        $base_path = dirname(dirname(dirname(__FILE__)));
-
-        define('ENVIRONMENT', 'development');
-        define('APPPATH', sprintf('%s/app/', $base_path));
-
-        // Is the config file in the environment folder?
-        if (!file_exists($file_path = APPPATH . 'config/' . ENVIRONMENT . '/database.php') && !file_exists($file_path = APPPATH . 'config/database.php')) {
+        if (!file_exists($file_path = rtrim(APPPATH, '/') . '/config/database.php')) {
             $io->write('<error>The configuration file database.php does not exist.</error>');
         }
 
