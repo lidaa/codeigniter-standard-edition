@@ -12,8 +12,6 @@ use Composer\Script\Event;
 class Build_Params extends Command {
     
     private static $templates_path;
-    private static $config_path;
-    private static $base_path;
     private static $params;
 
     /**
@@ -24,13 +22,13 @@ class Build_Params extends Command {
     public static function run(Event $event = null) {
         $io = self::getIO($event);
 
-        self::init();
+        self::init();        
         
         $user_params = array();
         foreach (self::$params as $key => $value) {
             $template_path = sprintf('%s/%s.php', self::$templates_path, $key);
-            $destination_file = sprintf('%s/%s.php', self::$config_path, $key);
-
+            $destination_file = sprintf('%s/config/%s.php', rtrim(APPPATH, '/'), $key);
+            
             $io->write(sprintf('<info>Generate "%s.php" from the template %s :</info>', $key, $template_path));
             foreach ($value as $sub_key => $sub_value) {
                 $response = $io->ask('<question>Type your ' . $sub_key . ' </question> (default: "' . $sub_value . '"): ', $sub_value);                
@@ -49,9 +47,7 @@ class Build_Params extends Command {
      * init
      */
     private static function init() {
-        self::$base_path = dirname(dirname(dirname(__FILE__)));
-        self::$templates_path = sprintf('%s/bin/templates', self::$base_path);
-        self::$config_path = sprintf('%s/app/config', self::$base_path);
+        self::$templates_path = sprintf('%s/templates', dirname(dirname(__FILE__)));
         
         $file = sprintf('%s/default.params.ini', self::$templates_path);
         
@@ -140,8 +136,8 @@ class Build_Params extends Command {
      * @param type $io
      */
     private static function git_ignore($file_path, $io) {
-        $gitignore_file = sprintf('%s/.gitignore', self::$base_path);
-        $file_relative_path = preg_replace('#' . self::$base_path . '#', "", $file_path, 1);
+        $gitignore_file = sprintf('%s/.gitignore', dirname(dirname(dirname(__FILE__))));
+        $file_relative_path = preg_replace('#' . dirname(dirname(dirname(__FILE__))) . '#', "", $file_path, 1);
         
         if((strpos(file_get_contents($gitignore_file), $file_relative_path) === false) && (strpos(file_get_contents($gitignore_file), trim($file_relative_path, '/')) === false)) {
             file_put_contents($gitignore_file, PHP_EOL . $file_relative_path, FILE_APPEND);

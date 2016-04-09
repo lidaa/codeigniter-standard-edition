@@ -281,12 +281,15 @@ switch (ENVIRONMENT)
 	}
 
 	define('VIEWPATH', $view_folder);
-
-/*
+        
+/*        
  * --------------------------------------------------------------------
  * LOAD THE BOOTSTRAP FILE
  * --------------------------------------------------------------------
  *
  * And away we go...
- */
-require_once BASEPATH.'core/CodeIgniter.php';
+ */      
+if (!defined('CISE_CMD')) {
+    // please don't remove this test  
+    require_once BASEPATH.'core/CodeIgniter.php';
+}

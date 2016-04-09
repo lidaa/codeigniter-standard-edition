@@ -21,7 +21,7 @@ class Clear_Cache extends Command {
 
         $io->write('Deleting cache files...');
 
-        $cachePath = sprintf('%s/app/cache', dirname(dirname(dirname(__FILE__))));
+        $cachePath = sprintf('%s/cache', rtrim(APPPATH, '/'));
         $dir_iterator = new \RecursiveDirectoryIterator($cachePath);
         $iterator = new \RecursiveIteratorIterator($dir_iterator, \RecursiveIteratorIterator::CHILD_FIRST);
 

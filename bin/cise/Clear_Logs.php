@@ -21,8 +21,8 @@ class Clear_Logs extends Command {
 
         $io->write('Deleting logs files...');
 
-        $cachePath = sprintf('%s/app/logs', dirname(dirname(dirname(__FILE__))));
-        $dir_iterator = new \RecursiveDirectoryIterator($cachePath);
+        $cache_path = sprintf('%s/logs', rtrim(APPPATH, '/'));
+        $dir_iterator = new \RecursiveDirectoryIterator($cache_path);
         $iterator = new \RecursiveIteratorIterator($dir_iterator, \RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($iterator as $file) {
