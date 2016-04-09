@@ -11,6 +11,8 @@ use Composer\Script\Event;
  */
 class Clear_Cache extends Command {
 
+    private static $cache_path;
+    
     /**
      * run
      * 
@@ -19,10 +21,11 @@ class Clear_Cache extends Command {
     public static function run(Event $event = null) {
         $io = self::getIO($event);
 
-        $io->write('Deleting cache files...');
+        self::init($io);
 
-        $cachePath = sprintf('%s/cache', rtrim(APPPATH, '/'));
-        $dir_iterator = new \RecursiveDirectoryIterator($cachePath);
+        $io->write('Deleting cache files...');
+        
+        $dir_iterator = new \RecursiveDirectoryIterator(self::$cache_path);
         $iterator = new \RecursiveIteratorIterator($dir_iterator, \RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($iterator as $file) {
@@ -36,5 +39,22 @@ class Clear_Cache extends Command {
         }
 
         $io->write('<info>Cache successfully deleted.</info>');
+    }
+
+    /**
+     * init
+     */
+    private static function init($io) {
+        if (!file_exists($file_path = rtrim(APPPATH, '/') . '/config/config.php')) {
+            $io->write('<error>The configuration file config.php does not exist.</error>');
+        }
+
+        include($file_path);
+
+        if("" == $config['cache_path']) {
+            self::$cache_path = sprintf('%s/cache', rtrim(APPPATH, '/'));
+        } else {
+            self::$cache_path = $config['cache_path'];
+        }
     }
 }

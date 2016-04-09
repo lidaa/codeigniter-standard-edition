@@ -11,6 +11,8 @@ use Composer\Script\Event;
  */
 class Clear_Logs extends Command {
 
+    private static $log_path;
+
     /**
      * run
      * 
@@ -19,10 +21,11 @@ class Clear_Logs extends Command {
     public static function run(Event $event = null) {
         $io = self::getIO($event);
 
+        self::init($io);
+        
         $io->write('Deleting logs files...');
 
-        $cache_path = sprintf('%s/logs', rtrim(APPPATH, '/'));
-        $dir_iterator = new \RecursiveDirectoryIterator($cache_path);
+        $dir_iterator = new \RecursiveDirectoryIterator(self::$log_path);
         $iterator = new \RecursiveIteratorIterator($dir_iterator, \RecursiveIteratorIterator::CHILD_FIRST);
 
         foreach ($iterator as $file) {
@@ -36,5 +39,22 @@ class Clear_Logs extends Command {
         }
 
         $io->write('<info>Logs successfully deleted.</info>');
+    }
+
+    /**
+     * init
+     */
+    private static function init($io) {
+        if (!file_exists($file_path = rtrim(APPPATH, '/') . '/config/config.php')) {
+            $io->write('<error>The configuration file config.php does not exist.</error>');
+        }
+
+        include($file_path);
+
+        if("" == $config['log_path']) {
+            self::$log_path = sprintf('%s/logs', rtrim(APPPATH, '/'));
+        } else {
+            self::$log_path = $config['log_path'];
+        }
     }
 }
