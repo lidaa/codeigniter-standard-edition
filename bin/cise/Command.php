@@ -37,6 +37,6 @@ class Command
     {
         defined('CISE_CMD') || define('CISE_CMD', true);
         
-        include sprintf('%s/index.php', dirname(dirname(dirname(__FILE__))));
+        include_once sprintf('%s/index.php', dirname(dirname(dirname(__FILE__))));
     }
 }
