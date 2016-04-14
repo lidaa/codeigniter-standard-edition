@@ -130,7 +130,7 @@ switch (ENVIRONMENT)
  */
 	$view_folder = '';
 
-
+        
 /*
  * --------------------------------------------------------------------
  * DEFAULT CONTROLLER
@@ -150,15 +150,25 @@ switch (ENVIRONMENT)
  *
  * Un-comment the $routing array below to use this feature
  */
-	// The directory name, relative to the "controllers" folder.  Leave blank
-	// if your controller is not in a sub-folder within the "controllers" folder
-	// $routing['directory'] = '';
+switch (ENVIRONMENT)
+{
+        case 'testing':
+            $routing['directory'] = 'cise';
+            $routing['controller'] = 'CISE_Testing';
+            $routing['function'] = 'test';
+        break;
 
-	// The controller class file name.  Example:  mycontroller
-	// $routing['controller'] = '';
+        default:
+            // The directory name, relative to the "controllers" folder.  Leave blank
+            // if your controller is not in a sub-folder within the "controllers" folder
+            // $routing['directory'] = '';
 
-	// The controller function you wish to be called.
-	// $routing['function']	= '';
+            // The controller class file name.  Example:  mycontroller
+            // $routing['controller'] = '';
+
+            // The controller function you wish to be called.
+            // $routing['function']	= '';
+}
 
 
 /*
