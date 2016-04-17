@@ -15,8 +15,7 @@ class Example_Test extends PHPUnit_Framework_TestCase
         $this->CI = &get_instance();
     }
 
-    public function testEmailValidation()
-    {
+    public function testEmailValidation() {
         $this->CI->load->helper('email');
 
         $this->assertTrue(valid_email('test@test.com'));
@@ -30,20 +29,21 @@ class Example_Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $this->CI->input->get_post('foo'));
     }
 
-    public function testPOST()
+    public function testRequest() 
     {
         $base_url = sprintf('http://%s', rtrim(trim($this->CI->config->item('base_url'), 'http://'), '/')); 
 
-        // create our http client (Guzzle)
-        $client = new \Guzzle\Http\Client($base_url);
+        $url = sprintf('%s/index.php/welcome/index', $base_url);
 
-        $data = array();
-
-        $request = $client->get('/welcome/index', null, json_encode($data));
-
-        $response = $request->send();
-
-        $this->assertContains('Welcome to CodeIgniter', $response->getBody(true));
-        $this->assertEquals('200', $response->getStatusCode());
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $html = curl_exec($curl);
+        
+        $this->assertContains('Welcome to CodeIgniter', $html);
+        $this->assertEquals('200', curl_getinfo($curl, CURLINFO_HTTP_CODE));
+                
+        curl_close($curl);
     }
+
 }
