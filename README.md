@@ -9,10 +9,11 @@ php composer.phar create-project lidaa/codeigniter-standard-edition PROJECT_NAME
 php bin/cise/console "CMD_NAME" ( php bin/cise/console Clear_Cache )
 
 ```
-[.] Build_Params => generate config files ( config.php, database.php, ...)
-[.] Clear_Cache => delete cache files
-[.] Clear_Logs => delete logs files
-[.] Run_Sql => execute a sql file
+[.] Build_Params => Generate config files ( config.php, database.php, ...).
+[.] Clear_Cache => Delete cache files.
+[.] Clear_Logs => Delete logs files.
+[.] Run_Sql => Execute a sql file.
+[.] Cs_Fixer => Use php-cs-fixer tool with the configuration in a ".php_cs".
 ```
 
 ## Note
