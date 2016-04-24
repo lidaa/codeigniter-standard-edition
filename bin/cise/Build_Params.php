@@ -137,13 +137,17 @@ class Build_Params extends Command {
      */
     private static function git_ignore($file_path, $io) {
         $gitignore_file = sprintf('%s/.gitignore', dirname(dirname(dirname(__FILE__))));
-        $file_relative_path = preg_replace('#' . dirname(dirname(dirname(__FILE__))) . '#', "", $file_path, 1);
+        $prefix = dirname(dirname(dirname(__FILE__)));
+        $file_relative_path = $file_path;
         
+        if (substr($file_relative_path, 0, strlen($prefix)) == $prefix) {
+            $file_relative_path = substr($file_relative_path, strlen($prefix));
+        }
+
         if((strpos(file_get_contents($gitignore_file), $file_relative_path) === false) && (strpos(file_get_contents($gitignore_file), trim($file_relative_path, '/')) === false)) {
             file_put_contents($gitignore_file, PHP_EOL . $file_relative_path, FILE_APPEND);
             
             $io->write(sprintf('The file "%s" has been added to the gitignore.', $file_relative_path));
         }
     }
-
 }
