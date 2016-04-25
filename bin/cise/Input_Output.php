@@ -34,14 +34,18 @@ class Input_Output {
     const BG_CYAN = "\033[46m";
     const BG_LIGHT_GRAY = "\033[47m";
 
+    private $stream;
+
     /**
      * write
      * 
-     * @param type $message
-     * @param type $newline
+     * @param string $message
+     * @param bool $newline
      */
     public function write($message, $newline = true) {
-        fwrite(STDOUT, $this->colorize($message) . ($newline ? PHP_EOL : ''));
+        $this->stream = STDOUT;
+
+        fwrite($this->stream, $this->colorize($message) . ($newline ? PHP_EOL : ''));
         
         if(strpos($message, '<error>') !== false && strpos($message, '</error>') !== false ) {
             exit;
@@ -51,9 +55,9 @@ class Input_Output {
     /**
      * ask
      * 
-     * @param type $message
-     * @param type $defaut_value
-     * @return type
+     * @param string $message
+     * @param string $defaut_value
+     * @return string
      */
     public function ask($message, $defaut_value) {
         $this->write($message, false);
@@ -69,8 +73,8 @@ class Input_Output {
     /**
      * colorize
      * 
-     * @param type $message
-     * @return type
+     * @param string $message
+     * @return string
      */
     protected function colorize($message) {
         $colorsMap = array(
@@ -84,6 +88,24 @@ class Input_Output {
             '</error>' => "\033[0m",
         );
 
+        if(!$this->hasColorSupport()) {
+            return str_replace(array_keys($colorsMap), array(''), $message);            
+        }
+        
         return str_replace(array_keys($colorsMap), array_values($colorsMap), $message);
+    }
+
+    /**
+     * hasColorSupport
+     * 
+     * @return bool
+     */
+    protected function hasColorSupport()
+    {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            return false !== getenv('ANSICON') || 'ON' === getenv('ConEmuANSI');
+        }
+
+        return function_exists('posix_isatty') && @posix_isatty($this->stream);
     }
 }
