@@ -30,12 +30,20 @@ class Command
         return $io;
     }
     
-    protected static function getArgv($as_string = false) {
+    /**
+     * getArgv
+     * 
+     * @global array $argv
+     * @param bool $as_string
+     * @return string
+     */
+    protected static function getArgv($as_string = false)
+    {
         global $argv;
         
         $tab_argv = array_slice($argv, 2);
         
-        if(!$as_string) {
+        if (!$as_string) {
             return $tab_argv;
         }
         

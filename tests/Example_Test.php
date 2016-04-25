@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /**
  * Example_Test
@@ -15,7 +15,8 @@ class Example_Test extends PHPUnit_Framework_TestCase
         $this->CI = &get_instance();
     }
 
-    public function testEmailValidation() {
+    public function testEmailValidation()
+    {
         $this->CI->load->helper('email');
 
         $this->assertTrue(valid_email('test@test.com'));
@@ -29,9 +30,9 @@ class Example_Test extends PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $this->CI->input->get_post('foo'));
     }
 
-    public function testRequest() 
+    public function testRequest()
     {
-        $base_url = sprintf('http://%s', rtrim(trim($this->CI->config->item('base_url'), 'http://'), '/')); 
+        $base_url = sprintf('http://%s', rtrim(trim($this->CI->config->item('base_url'), 'http://'), '/'));
 
         $url = sprintf('%s/index.php/welcome/index', $base_url);
 
@@ -45,5 +46,4 @@ class Example_Test extends PHPUnit_Framework_TestCase
                 
         curl_close($curl);
     }
-
 }

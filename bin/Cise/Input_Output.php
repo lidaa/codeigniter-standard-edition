@@ -3,11 +3,12 @@
 namespace Cise;
 
 /**
- * Description of Input_Output
+ * Input_Output
  *
  * @author Lidaa <aa_dil@hotmail.fr>
  */
-class Input_Output {
+class Input_Output
+{
 
     const BLACK = "\033[0;30m";
     const DARK_GRAY = "\033[1;30m";
@@ -42,12 +43,13 @@ class Input_Output {
      * @param string $message
      * @param bool $newline
      */
-    public function write($message, $newline = true) {
+    public function write($message, $newline = true)
+    {
         $this->stream = STDOUT;
 
         fwrite($this->stream, $this->colorize($message) . ($newline ? PHP_EOL : ''));
         
-        if(strpos($message, '<error>') !== false && strpos($message, '</error>') !== false ) {
+        if (strpos($message, '<error>') !== false && strpos($message, '</error>') !== false) {
             exit;
         }
     }
@@ -59,11 +61,12 @@ class Input_Output {
      * @param string $defaut_value
      * @return string
      */
-    public function ask($message, $defaut_value) {
+    public function ask($message, $defaut_value)
+    {
         $this->write($message, false);
         $line = trim(fgets(STDIN));
         
-        if(!$line) {
+        if (!$line) {
             $line = $defaut_value;
         }
         
@@ -76,7 +79,8 @@ class Input_Output {
      * @param string $message
      * @return string
      */
-    protected function colorize($message) {
+    protected function colorize($message)
+    {
         $colorsMap = array(
             '<info>' => self::GREEN,
             '<comment>' => self::YELLOW,
@@ -88,8 +92,8 @@ class Input_Output {
             '</error>' => "\033[0m",
         );
 
-        if(!$this->hasColorSupport()) {
-            return str_replace(array_keys($colorsMap), array(''), $message);            
+        if (!$this->hasColorSupport()) {
+            return str_replace(array_keys($colorsMap), array(''), $message);
         }
         
         return str_replace(array_keys($colorsMap), array_values($colorsMap), $message);

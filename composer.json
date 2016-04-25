@@ -5,7 +5,7 @@
     "description": "The \"CodeIgniter Standard Edition\" distribution",
     "autoload": {
         "psr-4": {
-            "Cise\\": "bin/cise"
+            "Cise\\": "bin/Cise"
         }
     },
     "require": {
