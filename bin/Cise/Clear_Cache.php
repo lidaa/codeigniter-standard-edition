@@ -5,11 +5,12 @@ namespace Cise;
 use Composer\Script\Event;
 
 /**
- * Description of Clear_Cache
+ * Clear_Cache
  *
  * @author Lidaa <aa_dil@hotmail.fr>
  */
-class Clear_Cache extends Command {
+class Clear_Cache extends Command
+{
 
     private static $cache_path;
     
@@ -18,7 +19,8 @@ class Clear_Cache extends Command {
      * 
      * @param Event $event
      */
-    public static function run(Event $event = null) {
+    public static function run(Event $event = null)
+    {
         $io = self::getIO($event);
 
         self::init($io);
@@ -43,15 +45,18 @@ class Clear_Cache extends Command {
 
     /**
      * init
+     * 
+     * @param type $io
      */
-    private static function init($io) {
+    private static function init($io)
+    {
         if (!file_exists($file_path = rtrim(APPPATH, '/') . '/config/config.php')) {
             $io->write('<error>The configuration file config.php does not exist.</error>');
         }
 
         include($file_path);
 
-        if("" == $config['cache_path']) {
+        if ("" == $config['cache_path']) {
             self::$cache_path = sprintf('%s/cache', rtrim(APPPATH, '/'));
         } else {
             self::$cache_path = $config['cache_path'];

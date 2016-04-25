@@ -6,7 +6,7 @@ php composer.phar create-project lidaa/codeigniter-standard-edition PROJECT_NAME
 
 ## Commands:
 
-php bin/cise/console "CMD_NAME" ( php bin/cise/console Clear_Cache )
+php bin/cise/console "CMD_NAME" ( php bin/Cise/console Clear_Cache )
 
 ```
 [.] Build_Params => Generate config files ( config.php, database.php, ...).
