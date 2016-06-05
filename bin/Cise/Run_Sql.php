@@ -30,7 +30,7 @@ class Run_Sql extends Command
         if (!isset($active_group)) {
             $io->write('<error>You have not specified a database connection group via $active_group in your config/database.php file.</error>');
         }
-        
+
         $hostname = $db[$active_group]['hostname'];
         $username = $db[$active_group]['username'];
         $password = $db[$active_group]['password'];
@@ -39,19 +39,19 @@ class Run_Sql extends Command
         try {
             mysqli_report(MYSQLI_REPORT_STRICT);
             $mysqli = new \mysqli($hostname, $username, $password);
-        
+
             $io->write(sprintf('<comment>Connected to %s:%s.</comment> ', $hostname, $database));
-        
+
             $sql_script_path = $io->ask('<question>Enter your SQl script path :</question> ', null);
-            
-            self::execute_script($mysqli,  $db[$active_group], $sql_script_path);
-                        
+
+            self::execute_script($mysqli, $db[$active_group], $sql_script_path);
+
             $io->write('<info>The script was executed successfully.</info>');
         } catch (\Exception $e) {
             $io->write('<error>' . $e->getMessage() . '</error>');
         }
     }
-    
+
     /**
      * execute_script
      * 
@@ -63,7 +63,7 @@ class Run_Sql extends Command
     private static function execute_script($mysqli, $param, $sql_script_path)
     {
         self::create_db($mysqli, $param);
-                    
+
         if (!file_exists($sql_script_path)) {
             throw new \Exception(sprintf('"%s" does not exist.', $sql_script_path));
         }
@@ -71,16 +71,29 @@ class Run_Sql extends Command
         if ('sql' !== strtolower(pathinfo($sql_script_path, PATHINFO_EXTENSION))) {
             throw new \Exception('Only sql file are allowed.');
         }
-        
+
         $queries = file_get_contents($sql_script_path);
-        
+
         $mysqli->query('USE ' . $param['database']);
-        
-        $mysqli->multi_query($queries);
-        
+
+        if ($mysqli->multi_query($queries)) {
+            do {
+                // store first result set 
+                if ($result = $mysqli->store_result()) {
+                    $result->free();
+                }
+            } while ($mysqli->next_result());
+
+            if ($mysqli->errno) {
+                throw new \Exception($mysqli->error);
+            }
+        } else {
+            throw new \Exception($mysqli->error);
+        }
+
         $mysqli->close();
     }
-    
+
     /**
      * create_db
      * 
@@ -95,7 +108,7 @@ class Run_Sql extends Command
 
             $sql .= (isset($db_params['char_set']) ? sprintf(' CHARACTER SET %s', $db_params['char_set']) : '');
             $sql .= (isset($db_params['dbcollat']) ? sprintf(' COLLATE %s', $db_params['dbcollat']) : '');
-            
+
             $mysqli->query($sql);
         } else {
             throw new \Exception('You have not specified a database name in your config/database.php file.');
