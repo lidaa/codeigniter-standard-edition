@@ -76,18 +76,9 @@ class Run_Sql extends Command
 
         $mysqli->query('USE ' . $param['database']);
 
-        if ($mysqli->multi_query($queries)) {
-            do {
-                // store first result set 
-                if ($result = $mysqli->store_result()) {
-                    $result->free();
-                }
-            } while ($mysqli->next_result());
-
-            if ($mysqli->errno) {
-                throw new \Exception($mysqli->error);
-            }
-        } else {
+        $mysqli->multi_query($queries);
+        while ($mysqli->more_results() && $mysqli->next_result()) {;}
+        if ($mysqli->errno) {
             throw new \Exception($mysqli->error);
         }
 
