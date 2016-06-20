@@ -24,15 +24,18 @@ class Build_Params extends Command
         $io = self::getIO($event);
 
         self::init();
-        
+
         $user_params = array();
         foreach (self::$params as $key => $value) {
             $template_path = sprintf('%s/%s.php', self::$templates_path, $key);
             $destination_file = sprintf('%s/config/%s.php', rtrim(APPPATH, '/'), $key);
-            
+
             $io->write(sprintf('<info>Generate "%s.php" from the template %s :</info>', $key, $template_path));
             foreach ($value as $sub_key => $sub_value) {
                 $response = $io->ask('<question>Type your ' . $sub_key . ' </question> (default: "' . $sub_value . '"): ', $sub_value);
+
+                $response = self::normalize($sub_key, $response);
+
                 $user_params[$key][$sub_key] = ($response === '""') ? "" : $response;
             }
 
@@ -40,23 +43,23 @@ class Build_Params extends Command
         }
 
         self::save_default_params($user_params, $io);
-        
+
         $io->write('<comment>You can add/edit templates files and change their params in params.ini</comment>');
     }
-    
+
     /**
      * init
      */
     private static function init()
     {
         self::$templates_path = sprintf('%s/templates', dirname(dirname(__FILE__)));
-        
+
         $file = sprintf('%s/default.params.ini', self::$templates_path);
-        
+
         if (!file_exists($file)) {
             $file = sprintf('%s/params.ini', self::$templates_path);
         }
-        
+
         self::$params = parse_ini_file($file, true);
     }
 
@@ -76,10 +79,10 @@ class Build_Params extends Command
         }
 
         file_put_contents($destination_file, $content);
-        
+
         self::git_ignore($destination_file, $io);
     }
-    
+
     /**
      * save_default_params
      * 
@@ -102,7 +105,7 @@ class Build_Params extends Command
         }
 
         self::safe_file_rewrite($file, implode("\r\n", $res));
-        
+
         self::git_ignore($file, $io);
     }
 
@@ -122,7 +125,7 @@ class Build_Params extends Command
                 if (!$can_write) {
                     usleep(round(rand(0, 100) * 1000));
                 }
-            } while ((!$can_write)and ((microtime(true) - $start_Time) < 5));
+            } while ((!$can_write) and ( (microtime(true) - $start_Time) < 5));
 
             //file was locked so now we can store information
             if ($can_write) {
@@ -133,7 +136,7 @@ class Build_Params extends Command
             fclose($fp);
         }
     }
-    
+
     /**
      * git_ignore
      * 
@@ -145,15 +148,46 @@ class Build_Params extends Command
         $gitignore_file = sprintf('%s/.gitignore', dirname(dirname(dirname(__FILE__))));
         $prefix = dirname(dirname(dirname(__FILE__)));
         $file_relative_path = $file_path;
-        
+
         if (substr($file_relative_path, 0, strlen($prefix)) == $prefix) {
             $file_relative_path = substr($file_relative_path, strlen($prefix));
         }
 
         if ((strpos(file_get_contents($gitignore_file), $file_relative_path) === false) && (strpos(file_get_contents($gitignore_file), trim($file_relative_path, '/')) === false)) {
             file_put_contents($gitignore_file, PHP_EOL . $file_relative_path, FILE_APPEND);
-            
+
             $io->write(sprintf('The file "%s" has been added to the gitignore.', $file_relative_path));
         }
+    }
+
+    /**
+     * normalize
+     * 
+     * @param type $name
+     * @param type $value
+     * @return type
+     */
+    private static function normalize($name, $value)
+    {
+        if ('base_url' == $name) {
+            return self::add_http($value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * add_http
+     * 
+     * @param string $url
+     * @return type
+     */
+    private static function add_http($url)
+    {
+        if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
+            $url = "http://" . $url;
+        }
+
+        return sprintf('%s/', trim($url, '/'));
     }
 }
